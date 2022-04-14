@@ -351,6 +351,9 @@ impl<T> BufferTexture<T> where [T]: BufferContent, T: TextureBufferContent + Cop
                   ctxt.extensions.gl_ext_texture_buffer_object
         {
             match (T::get_type(), ty) {
+                (TextureBufferContentType::U8, BufferTextureType::Float) => gl::LUMINANCE8,
+                (TextureBufferContentType::U8, BufferTextureType::Unsigned) => gl::LUMINANCE8UI_EXT,
+                (TextureBufferContentType::I8, BufferTextureType::Integral) => gl::LUMINANCE8I_EXT,
                 (TextureBufferContentType::U8U8U8U8, BufferTextureType::Float) => gl::RGBA8,
                 (TextureBufferContentType::U16U16U16U16, BufferTextureType::Float) => gl::RGBA16,
                 (TextureBufferContentType::F16F16F16F16, BufferTextureType::Float) => gl::RGBA16F,

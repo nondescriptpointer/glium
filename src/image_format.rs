@@ -1699,6 +1699,7 @@ pub fn format_request_to_glenum(context: &Context, format: TextureFormatRequest,
 
             } else if version >= &Version(Api::GlEs, 2, 0) {
                 match (rq_ty, size) {
+                    (RequestType::TexImage(_), Some(1)) => gl::LUMINANCE,
                     (RequestType::TexImage(_), Some(3)) => gl::RGB,
                     (_, Some(3)) => {
                         if extensions.gl_oes_rgb8_rgba8 {

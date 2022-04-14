@@ -2071,6 +2071,8 @@ pub fn client_format_to_glenum(context: &Context, client: ClientFormatAny,
                                -> Result<(gl::types::GLenum, gl::types::GLenum),
                                          FormatNotSupportedError>
 {
+    let version = context.get_opengl_version();
+
     let value = match format {
         TextureFormatRequest::AnyCompressed if client.is_compressed() => {
             match client {
@@ -2128,7 +2130,13 @@ pub fn client_format_to_glenum(context: &Context, client: ClientFormatAny,
         TextureFormatRequest::Specific(TextureFormat::CompressedSrgbFormat(_)) =>
         {
             match client {
-                ClientFormatAny::ClientFormat(ClientFormat::U8) => Ok((gl::RED, gl::UNSIGNED_BYTE)),
+                ClientFormatAny::ClientFormat(ClientFormat::U8) => {
+                    if version >= &Version(Api::GlEs, 2, 0) {
+                        Ok((gl::LUMINANCE, gl::UNSIGNED_BYTE))
+                    }else{
+                        Ok((gl::RED, gl::UNSIGNED_BYTE))
+                    }
+                },
                 ClientFormatAny::ClientFormat(ClientFormat::U8U8) => Ok((gl::RG, gl::UNSIGNED_BYTE)),
                 ClientFormatAny::ClientFormat(ClientFormat::U8U8U8) => Ok((gl::RGB, gl::UNSIGNED_BYTE)),
                 ClientFormatAny::ClientFormat(ClientFormat::U8U8U8U8) => Ok((gl::RGBA, gl::UNSIGNED_BYTE)),
@@ -2179,7 +2187,13 @@ pub fn client_format_to_glenum(context: &Context, client: ClientFormatAny,
         TextureFormatRequest::Specific(TextureFormat::UncompressedUnsigned(_)) =>
         {
             match client {
-                ClientFormatAny::ClientFormat(ClientFormat::U8) => Ok((gl::RED_INTEGER, gl::UNSIGNED_BYTE)),
+                ClientFormatAny::ClientFormat(ClientFormat::U8) => {
+                    if version >= &Version(Api::GlEs, 2, 0) {
+                        Ok((gl::LUMINANCE_INTEGER_EXT, gl::UNSIGNED_BYTE))
+                    }else{
+                        Ok((gl::RED_INTEGER, gl::UNSIGNED_BYTE))
+                    }
+                },
                 ClientFormatAny::ClientFormat(ClientFormat::U8U8) => Ok((gl::RG_INTEGER, gl::UNSIGNED_BYTE)),
                 ClientFormatAny::ClientFormat(ClientFormat::U8U8U8) => Ok((gl::RGB_INTEGER, gl::UNSIGNED_BYTE)),
                 ClientFormatAny::ClientFormat(ClientFormat::U8U8U8U8) => Ok((gl::RGBA_INTEGER, gl::UNSIGNED_BYTE)),
